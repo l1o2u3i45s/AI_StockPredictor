@@ -7,14 +7,21 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from torch.utils.data import TensorDataset, DataLoader
 import matplotlib.pyplot as plt
+import Model
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
+
+stockRawData = []
 
 # 讀取數據
 with open('006208_stock.txt') as f:
     data = json.load(f)
     stockdata = data['data']
+
+with open('006208_BuySell.txt') as f:
+    data = json.load(f)
+    stockBuySelldata = data['data']
 
 # 轉換數據為數字格式
 data = []
