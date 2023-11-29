@@ -9,35 +9,20 @@ from torch.utils.data import TensorDataset, DataLoader
 import matplotlib.pyplot as plt
 import Model
 
+stock_id = "006208"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
+  
+# Reading JSON data (replace with the path to your JSON file)
+with open('Data/' + stock_id + '_RawData.json', 'r', encoding='utf-8') as file:
+    json_data = json.load(file)
 
-stockRawData = []
-
-# 讀取數據
-with open('006208_stock.txt') as f:
-    data = json.load(f)
-    stockdata = data['data']
-
-with open('006208_BuySell.txt') as f:
-    data = json.load(f)
-    stockBuySelldata = data['data']
-
-# 轉換數據為數字格式
-data = []
-for rawdata in stockdata:
-    data.append([
-        float(rawdata['Trading_Volume']),
-        float(rawdata['open']),
-        float(rawdata['max']),
-        float(rawdata['min']),
-        float(rawdata['close']),
-        float(rawdata['spread']) 
-    ])
+# Convert JSON to DTO
+stock_dto = Model.json_to_dto(json_data)
 
 # 標準化數據
 scaler = MinMaxScaler(feature_range=(0, 1))
-scaled_data = scaler.fit_transform(data)
+scaled_data = scaler.fit_transform(stock_dto)
 
 # 創建特徵和標籤
 def create_dataset(data, time_step):
@@ -68,24 +53,10 @@ test_data = TensorDataset(X_test, Y_test)
 train_loader = DataLoader(train_data, shuffle=True, batch_size=16)
 test_loader = DataLoader(test_data, batch_size=16)
 
-# 定義LSTM模型
-class StockPredictor(nn.Module):
-    def __init__(self, input_dim, hidden_dim, num_layers, output_dim):
-        super(StockPredictor, self).__init__()
-        self.hidden_dim = hidden_dim
-        self.num_layers = num_layers
-        self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_dim, output_dim)
 
-    def forward(self, x):
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_dim).requires_grad_()
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_dim).requires_grad_()
-        out, (hn, cn) = self.lstm(x, (h0.detach(), c0.detach())).to(device)
-        out = self.fc(out[:, -1, :]).to(device)
-        return out
 
 # 實例化模型、損失函數和優化器
-model = StockPredictor(input_dim=5, hidden_dim=50, num_layers=2, output_dim=1).to(device)
+model = Model.StockPredictor(input_dim=5, hidden_dim=50, num_layers=2, output_dim=1).to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
