@@ -24,16 +24,18 @@ stock_dto = Model.json_to_dto(json_data)
  
 tensors = [Model.stock_data_to_tensor(data) for data in stock_dto.data]
 
-trainDatasize = len(tensors) * 0.8
+trainDatasize = int(len(tensors) * 0.8)
 
 trainTensors = tensors[0 : trainDatasize]
 testTensors = tensors[trainDatasize+1 : len(tensors)]
 # 轉換為PyTorch張量
 window_size = 20
 trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
-trainLabel = [torch.stack(trainTensors[window_size + 1 : len(trainTensors)]) for i in range(len(trainTensors) - window_size)]
+trainLabel = trainTensors[window_size : len(trainTensors)]
+ 
+
 testData = [torch.stack(testTensors[i:i+window_size]) for i in range(len(testTensors) - window_size)]
-testLabel = [torch.stack(testTensors[window_size + 1 : len(testTensors)]) for i in range(len(testTensors) - window_size)]
+testLabel = testTensors[window_size : len(trainTensors)]
 
 
 trainDataSet = Model.ModelDataset(trainData,trainLabel)
@@ -66,3 +68,23 @@ for epoch in range(num_epochs):
 # # 預測並獲取預測值
 model.eval()
  
+test_losses = []
+
+# No need to track gradients for evaluation
+with torch.no_grad():
+    for inputs, labels in test_loader:
+        # Move data to the device the model is using
+        inputs, labels = inputs.to(device), labels.to(device)
+
+        # Forward pass
+        outputs = model(inputs)
+
+        # Compute the loss
+        loss = criterion(outputs, labels.unsqueeze(1))
+        
+        # Store the loss
+        test_losses.append(loss.item())
+
+# Calculate the average loss over all test batches
+average_test_loss = np.mean(test_losses)
+print(f"Average test loss: {average_test_loss}")
