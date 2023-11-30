@@ -1,6 +1,8 @@
 from typing import List, Dict
 import torch.nn as nn 
 import torch 
+from torch.utils.data import Dataset
+
 
 # 定義LSTM模型
 class StockPredictor(nn.Module):
@@ -17,7 +19,24 @@ class StockPredictor(nn.Module):
         out, (hn, cn) = self.lstm(x, (h0.detach(), c0.detach())) 
         out = self.fc(out[:, -1, :]) 
         return out
-  
+
+# DataSet
+class ModelDataset(Dataset):
+
+    # data loading
+    def __init__(self, train, label):
+        self.train = train
+        self.label = label
+
+    # working for indexing
+    def __getitem__(self, index):
+        
+        return self.train[index], self.label[index]
+
+    # return the length of our dataset
+    def __len__(self):
+        
+        return len(self.train)
 
 # Re-defining the DTO classes
 class BuySellDTO:
