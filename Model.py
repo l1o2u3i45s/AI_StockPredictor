@@ -4,21 +4,33 @@ import torch
 from torch.utils.data import Dataset
 
 
-# 定義LSTM模型
+# 定義模型
 class StockPredictor(nn.Module):
-    def __init__(self, input_dim, hidden_dim, num_layers, output_dim):
+    def __init__(self, input_dim, output_dim):
         super(StockPredictor, self).__init__()
-        self.hidden_dim = hidden_dim
-        self.num_layers = num_layers
-        self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_dim, output_dim)
+        
+        d_model = input_dim
+        nhead = input_dim // 4
+        if d_model % nhead != 0:
+            raise ValueError("input_dim must be divisible by nhead")
+        
+        num_encoder_layers = 6
+        dim_feedforward = 2048
+        dropout = 0.1
+        encoder_layer = nn.TransformerEncoderLayer(d_model=d_model, nhead=nhead, 
+                                                   dim_feedforward=dim_feedforward, 
+                                                   dropout=dropout)
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_encoder_layers)
+        self.fc = nn.Linear(input_dim, output_dim)
 
     def forward(self, x):
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_dim).requires_grad_()
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_dim).requires_grad_()
-        out, (hn, cn) = self.lstm(x, (h0.detach(), c0.detach())) 
-        out = self.fc(out[:, -1, :]) 
-        return out
+        transformer_output = self.transformer_encoder(x).squeeze(1)
+        final_output = self.fc(transformer_output)
+        return final_output
+
+ 
+
+ 
 
 # DataSet
 class ModelDataset(Dataset):

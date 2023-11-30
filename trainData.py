@@ -49,7 +49,7 @@ test_loader = DataLoader(testDataSet, batch_size=16)
 
 
 # # 實例化模型、損失函數和優化器
-model = Model.StockPredictor(input_dim=5, hidden_dim=50, num_layers=2, output_dim=1).to(device)
+model = Model.StockPredictor(input_dim=8, output_dim=8).to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
