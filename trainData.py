@@ -26,9 +26,12 @@ tensors = [Model.stock_data_to_tensor(data) for data in stock_dto.data]
 
 # 轉換為PyTorch張量
 window_size = 20
-tensors_grouped = [torch.stack(tensors[i:i+window_size]) for i in range(len(tensors) - window_size + 1)]
+trainData = [torch.stack(tensors[i:i+window_size]) for i in range(len(tensors) - window_size)]
+label = [torch.stack(tensors[window_size + 1 : len(tensors)]) for i in range(len(tensors) - window_size)]
 
-print(tensors_grouped[0].shape)
+print(len(tensors))
+print(len(trainData))
+print(len(label))
 
  
 
