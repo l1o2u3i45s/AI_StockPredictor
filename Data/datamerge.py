@@ -1,5 +1,6 @@
 
 import json
+import os
 
 code = '006208'
 # Reading the JSON data from the files
@@ -38,6 +39,7 @@ for entry in buysell_data:
 
 # Converting intermediate merged data to the final structure with "data" as the key
 final_merged_data = {'data': [{'date': date, **data} for date, data in intermediate_merged_data.items()]}
+
 
 # Writing the final merged data to a JSON file
 output_json_path = code + '_RawData.json'

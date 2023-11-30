@@ -2,9 +2,7 @@ import json
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split
+import torch.optim as optim 
 from torch.utils.data import TensorDataset, DataLoader
 import matplotlib.pyplot as plt
 import Model
@@ -16,6 +14,10 @@ print("Using device:", device)
 # Reading JSON data (replace with the path to your JSON file)
 with open('Data/' + stock_id + '_RawData.json', 'r', encoding='utf-8') as file:
     json_data = json.load(file)
+    json_data = json_data['data']
+
+
+json_data = [x for x in json_data if 'BuySell' in x and len(x['BuySell']) == 2]
 
 # Convert JSON to DTO
 stock_dto = Model.json_to_dto(json_data)

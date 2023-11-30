@@ -48,11 +48,10 @@ class StockDTO:
 # Function to convert JSON data to DTO, merging Foreign_Investor, Investment_Trust, Dealer into BuySell
 def json_to_dto(json_data: Dict) -> StockDTO:
     stock_list = []
-    for entry in json_data['data']:
+    for entry in json_data:
         buy_sell_data = []
         buy_sell_data.append(BuySellDTO(entry['BuySell'][0]['buy'], entry['BuySell'][0]['sell']))
-        buy_sell_data.append(BuySellDTO(entry['BuySell'][1]['buy'], entry['BuySell'][1]['sell']))
-        buy_sell_data.append(BuySellDTO(entry['BuySell'][2]['buy'], entry['BuySell'][2]['sell']))
+        buy_sell_data.append(BuySellDTO(entry['BuySell'][1]['buy'], entry['BuySell'][1]['sell'])) 
         stock_data_dto = StockDataDTO(
             date=entry['date'], 
             stock_id=entry['stock_id'], 
@@ -82,8 +81,6 @@ def stock_data_to_tensor(stock_data: StockDataDTO) -> torch.Tensor:
         stock_data.buy_sell_data[0].buy,
         stock_data.buy_sell_data[0].sell,
         stock_data.buy_sell_data[1].buy,
-        stock_data.buy_sell_data[1].sell,
-        stock_data.buy_sell_data[2].buy,
-        stock_data.buy_sell_data[2].sell,
+        stock_data.buy_sell_data[1].sell, 
     ]
     return torch.tensor(values, dtype=torch.float32)
