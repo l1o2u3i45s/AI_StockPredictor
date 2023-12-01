@@ -12,17 +12,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
   
 # Reading JSON data (replace with the path to your JSON file)
-with open('Data/' + stock_id + '_RawData.json', 'r', encoding='utf-8') as file:
-    json_data = json.load(file)
-    json_data = json_data['data']
+with open('Data/' + stock_id + '.json', 'r', encoding='utf-8') as file:
+    json_data = json.load(file) 
 
-
-json_data = [x for x in json_data if 'BuySell' in x and len(x['BuySell']) == 2]
-
-# Convert JSON to DTO
-stock_dto = Model.json_to_dto(json_data)
  
-tensors = [Model.stock_data_to_tensor(data) for data in stock_dto.data]
+tensors = torch.tensor(json_data, dtype=torch.float32)
 
 trainDatasize = int(len(tensors) * 0.8)
 
