@@ -77,5 +77,6 @@ for epoch in range(num_epochs):
         optimizer.step()
 
 # # 預測並獲取預測值
+model.eval()
 torch.save(model.state_dict(), './model.pth')
  

@@ -52,7 +52,7 @@ testDataSet = Model.ModelDataset(testData,testMaskData, testLabel)
 test_loader = DataLoader(testDataSet, batch_size=16)
 
 test_losses = []
-testModel = Model.StockPredictor(input_dim= 10) 
+testModel = Model.StockPredictor(input_dim= 10).to(device) 
 testModel.load_state_dict(torch.load('./model.pth'))
 
 criterion = nn.MSELoss()
