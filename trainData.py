@@ -38,13 +38,15 @@ testTensors = tensors[trainDatasize+1 : len(tensors)]
 testLabelTensor = labels[trainDatasize+1 : len(labels)] 
 # 轉換為PyTorch張量
 window_size = 20
-trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
+maskTensor = torch.tensor([-1., -1., -1., -1., -1., -1., -1., -1., -1., -1.])
+trainData = [torch.stack(trainTensors[i:i+window_size]+ [maskTensor]) for i in range(len(trainTensors) - window_size)]
 trainLabel = trainLabelTensor[window_size : len(trainLabelTensor)]
  
 
-testData = [torch.stack(testTensors[i:i+window_size]) for i in range(len(testTensors) - window_size)]
+testData = [torch.stack(testTensors[i:i+window_size] + [maskTensor]) for i in range(len(testTensors) - window_size)]
 testLabel = testLabelTensor[window_size : len(testLabelTensor)]
 
+print(trainData[0].shape)
 
 trainDataSet = Model.ModelDataset(trainData,trainLabel)
 testDataSet = Model.ModelDataset(testData,testLabel)
