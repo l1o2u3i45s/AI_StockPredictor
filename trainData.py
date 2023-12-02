@@ -73,7 +73,8 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
         outputs = model(inputs,inputMask)
         loss = criterion(outputs, labels)
-        loss.backward()
+        print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+        loss.backward() 
         optimizer.step()
 
 # # 預測並獲取預測值
