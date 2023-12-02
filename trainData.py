@@ -54,7 +54,7 @@ testDataSet = Model.ModelDataset(testData,testMaskData, testLabel)
 
 
 # # 創建數據加載器 
-train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
+
 test_loader = DataLoader(testDataSet, batch_size=16)
 
 
@@ -63,13 +63,14 @@ test_loader = DataLoader(testDataSet, batch_size=16)
 trainType = 2
 
 if trainType == 1: #TransFormer
-
+    train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
     model = Model.StockPredictor(input_dim= 10).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # # 訓練模型
     num_epochs = 100
+    model.train()
     for epoch in range(num_epochs):
         print(epoch)
         for inputs, inputMask, labels in train_loader:
@@ -86,21 +87,25 @@ if trainType == 1: #TransFormer
     torch.save(model.state_dict(), './TransFormer.pth')
 
 elif trainType == 2: #LSTM
-
+    train_loader = DataLoader(trainDataSet, shuffle=False, batch_size=4)
     model = Model.LSTM(dimension = 10).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # # 訓練模型
-    num_epochs = 100
+    num_epochs = 300
+    model.train()
     for epoch in range(num_epochs):
         print(epoch)
         for inputs, inputMask, labels in train_loader:
             inputs,inputMask, labels = inputs.to(device),inputMask.to(device), labels.to(device)
+ 
             optimizer.zero_grad()
             outputs = model(inputs)
             loss = criterion(outputs, labels)
-            #print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+             
+            print("Inputs OpenPrice:", labels[0, 0].item(), "Inputs ClosePrice:", labels[0, 1].item())
+            print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
             loss.backward() 
             optimizer.step()
 
