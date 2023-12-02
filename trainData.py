@@ -15,21 +15,35 @@ print("Using device:", device)
 with open('Data/' + stock_id + '.json', 'r', encoding='utf-8') as file:
     json_data = json.load(file) 
 
- 
-tensors = torch.tensor(json_data, dtype=torch.float32)
+tensors = []
+labels = []
+for record in json_data:
+    jsonData = [record['TradeVolumn'],record['OpenPrice'],
+               record['MaxPrice'],record['MinPrice'],
+               record['ClosePrice'],record['MA5'],
+               record['MA10'],record['MA20'],
+               record['MA60'],record['MACDSignal']  ]
+    labelData = [record['OpenPrice'],record['ClosePrice']] 
+
+    tensorData = torch.tensor(jsonData, dtype=torch.float32)
+    label = torch.tensor(labelData, dtype=torch.float32)
+    tensors.append(tensorData)
+    labels.append(label)
 
 trainDatasize = int(len(tensors) * 0.8)
 
-trainTensors = tensors[0 : trainDatasize]
-testTensors = tensors[trainDatasize+1 : len(tensors)]
+trainTensors = tensors[0 : trainDatasize] 
+trainLabelTensor = labels[0 : trainDatasize] 
+testTensors = tensors[trainDatasize+1 : len(tensors)] 
+testLabelTensor = labels[trainDatasize+1 : len(labels)] 
 # 轉換為PyTorch張量
 window_size = 20
 trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
-trainLabel = trainTensors[window_size : len(trainTensors)]
+trainLabel = trainLabelTensor[window_size : len(trainLabelTensor)]
  
 
 testData = [torch.stack(testTensors[i:i+window_size]) for i in range(len(testTensors) - window_size)]
-testLabel = testTensors[window_size : len(trainTensors)]
+testLabel = testLabelTensor[window_size : len(testLabelTensor)]
 
 
 trainDataSet = Model.ModelDataset(trainData,trainLabel)
@@ -43,7 +57,7 @@ test_loader = DataLoader(testDataSet, batch_size=16)
 
 
 # # 實例化模型、損失函數和優化器
-model = Model.StockPredictor(input_dim=8, output_dim=8).to(device)
+model = Model.StockPredictor(input_dim=10, output_dim=2).to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
