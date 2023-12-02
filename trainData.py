@@ -70,7 +70,7 @@ if trainType == 1: #TransFormer
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     # # 訓練模型
-    num_epochs = 200
+    num_epochs = 100
     model.train()
     for epoch in range(num_epochs):
         print(epoch)
