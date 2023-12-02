@@ -37,19 +37,20 @@ trainLabelTensor = labels[0 : trainDatasize]
 testTensors = tensors[trainDatasize+1 : len(tensors)] 
 testLabelTensor = labels[trainDatasize+1 : len(labels)] 
 # 轉換為PyTorch張量
-window_size = 20
+window_size = 23
 maskTensor = torch.tensor([-1., -1., -1., -1., -1., -1., -1., -1., -1., -1.])
-trainData = [torch.stack(trainTensors[i:i+window_size]+ [maskTensor]) for i in range(len(trainTensors) - window_size)]
+
+trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
+trainMaskData = [torch.stack(trainTensors[i:i+window_size]+ [maskTensor]) for i in range(len(trainTensors) - window_size)]
 trainLabel = trainLabelTensor[window_size : len(trainLabelTensor)]
  
-
-testData = [torch.stack(testTensors[i:i+window_size] + [maskTensor]) for i in range(len(testTensors) - window_size)]
+testData = [torch.stack(testTensors[i:i+window_size]) for i in range(len(testTensors) - window_size)]
+testMaskData = [torch.stack(testTensors[i:i+window_size] + [maskTensor]) for i in range(len(testTensors) - window_size)]
 testLabel = testLabelTensor[window_size : len(testLabelTensor)]
+ 
 
-print(trainData[0].shape)
-
-trainDataSet = Model.ModelDataset(trainData,trainLabel)
-testDataSet = Model.ModelDataset(testData,testLabel)
+trainDataSet = Model.ModelDataset(trainData,trainMaskData, trainLabel)
+testDataSet = Model.ModelDataset(testData,testMaskData, testLabel)
 
 
 # # 創建數據加載器 
@@ -59,7 +60,7 @@ test_loader = DataLoader(testDataSet, batch_size=16)
 
 
 # # 實例化模型、損失函數和優化器
-model = Model.StockPredictor(input_dim=10, output_dim=2).to(device)
+model = Model.StockPredictor(input_dim= 10).to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -67,11 +68,11 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 num_epochs = 100
 for epoch in range(num_epochs):
     print(epoch)
-    for inputs, labels in train_loader:
-        inputs, labels = inputs.to(device), labels.to(device)
+    for inputs, inputMask, labels in train_loader:
+        inputs,inputMask, labels = inputs.to(device),inputMask.to(device), labels.to(device)
         optimizer.zero_grad()
-        outputs = model(inputs)
-        loss = criterion(outputs, labels.unsqueeze(1))
+        outputs = model(inputs,inputMask)
+        loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
 
@@ -82,15 +83,18 @@ test_losses = []
 
 # No need to track gradients for evaluation
 with torch.no_grad():
-    for inputs, labels in test_loader:
+    for inputs,inputMask, labels in test_loader:
         # Move data to the device the model is using
-        inputs, labels = inputs.to(device), labels.to(device)
+        inputs, inputMask, labels = inputs.to(device), inputMask.to(device), labels.to(device)
 
         # Forward pass
-        outputs = model(inputs)
+        outputs = model(inputs,inputMask)
+
+        print("label OpenPrice:" + label[0] +"label ClosePrice:" + label[1])
+        print("Predict OpenPrice:" + outputs[0] +"Predict ClosePrice:" + outputs[1])
 
         # Compute the loss
-        loss = criterion(outputs, labels.unsqueeze(1))
+        loss = criterion(outputs, labels)
         
         # Store the loss
         test_losses.append(loss.item())
