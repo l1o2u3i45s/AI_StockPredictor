@@ -37,7 +37,7 @@ trainLabelTensor = labels[0 : trainDatasize]
 testTensors = tensors[trainDatasize+1 : len(tensors)] 
 testLabelTensor = labels[trainDatasize+1 : len(labels)] 
 # 轉換為PyTorch張量
-window_size = 23
+window_size = 100
 maskTensor = torch.tensor([-1., -1., -1., -1., -1., -1., -1., -1., -1., -1.])
 
 trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
@@ -87,7 +87,7 @@ if trainType == 1: #TransFormer
     torch.save(model.state_dict(), './TransFormer.pth')
 
 elif trainType == 2: #LSTM
-    train_loader = DataLoader(trainDataSet, shuffle=False, batch_size=4)
+    train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
     model = Model.LSTM(dimension = 10).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -96,6 +96,8 @@ elif trainType == 2: #LSTM
     num_epochs = 300
     model.train()
     for epoch in range(num_epochs):
+        total_loss = 0
+        num_batches = 0
         print(epoch)
         for inputs, inputMask, labels in train_loader:
             inputs,inputMask, labels = inputs.to(device),inputMask.to(device), labels.to(device)
@@ -104,10 +106,16 @@ elif trainType == 2: #LSTM
             outputs = model(inputs)
             loss = criterion(outputs, labels)
              
-            print("Inputs OpenPrice:", labels[0, 0].item(), "Inputs ClosePrice:", labels[0, 1].item())
-            print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+            #print("Inputs OpenPrice:", labels[0, 0].item(), "Inputs ClosePrice:", labels[0, 1].item())
+            #print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
             loss.backward() 
             optimizer.step()
+
+            total_loss += loss.item()
+            num_batches += 1
+
+        average_loss = total_loss / num_batches
+        print(f"Epoch {epoch} - Average Loss: {average_loss:.4f}")
 
     # # 預測並獲取預測值
     model.eval()
