@@ -19,9 +19,9 @@ class LSTM(nn.Module):
         
     
 # 定義模型
-class StockPredictor(nn.Module):
+class Transformer(nn.Module):
     def __init__(self, input_dim, embed_dim=128):
-        super(StockPredictor, self).__init__()
+        super(Transformer, self).__init__()
         
         # 确保线性层的 in_features 与输入特征维度匹配
         self.linear_src = nn.Linear(input_dim, embed_dim)  # input_dim 应该是 10
@@ -34,8 +34,9 @@ class StockPredictor(nn.Module):
         target = self.linear_target(target)
         transformer_output = self.transformer(src, target)
         output = transformer_output[:, -1, :]
-        output = self.fc(output)
-        return output
+        output = self.fc(transformer_output)
+ 
+        return output[:, len(output) - 1, :]
 
 
 # DataSet
