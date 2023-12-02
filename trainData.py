@@ -60,24 +60,50 @@ test_loader = DataLoader(testDataSet, batch_size=16)
 
 
 # # 實例化模型、損失函數和優化器
-model = Model.StockPredictor(input_dim= 10).to(device)
-criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+trainType = 2
 
-# # 訓練模型
-num_epochs = 100
-for epoch in range(num_epochs):
-    print(epoch)
-    for inputs, inputMask, labels in train_loader:
-        inputs,inputMask, labels = inputs.to(device),inputMask.to(device), labels.to(device)
-        optimizer.zero_grad()
-        outputs = model(inputs,inputMask)
-        loss = criterion(outputs, labels)
-        print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
-        loss.backward() 
-        optimizer.step()
+if trainType == 1: #TransFormer
 
-# # 預測並獲取預測值
-model.eval()
-torch.save(model.state_dict(), './model.pth')
- 
+    model = Model.StockPredictor(input_dim= 10).to(device)
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+    # # 訓練模型
+    num_epochs = 100
+    for epoch in range(num_epochs):
+        print(epoch)
+        for inputs, inputMask, labels in train_loader:
+            inputs,inputMask, labels = inputs.to(device),inputMask.to(device), labels.to(device)
+            optimizer.zero_grad()
+            outputs = model(inputs,inputMask)
+            loss = criterion(outputs, labels)
+            print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+            loss.backward() 
+            optimizer.step()
+
+    # # 預測並獲取預測值
+    model.eval()
+    torch.save(model.state_dict(), './TransFormer.pth')
+
+elif trainType == 2: #LSTM
+
+    model = Model.LSTM(dimension = 10).to(device)
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+    # # 訓練模型
+    num_epochs = 100
+    for epoch in range(num_epochs):
+        print(epoch)
+        for inputs, inputMask, labels in train_loader:
+            inputs,inputMask, labels = inputs.to(device),inputMask.to(device), labels.to(device)
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            #print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+            loss.backward() 
+            optimizer.step()
+
+    # # 預測並獲取預測值
+    model.eval()
+    torch.save(model.state_dict(), './LSTM.pth')

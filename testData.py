@@ -52,23 +52,51 @@ testDataSet = Model.ModelDataset(testData,testMaskData, testLabel)
 test_loader = DataLoader(testDataSet, batch_size=16)
 
 test_losses = []
-testModel = Model.StockPredictor(input_dim= 10).to(device) 
-testModel.load_state_dict(torch.load('./model.pth'))
 
-criterion = nn.MSELoss()
-# No need to track gradients for evaluation
-with torch.no_grad():
-    for inputs, inputMask, labels in test_loader:
-        inputs, inputMask, labels = inputs.to(device), inputMask.to(device), labels.to(device)
 
-        outputs = testModel(inputs, inputMask)
+# # 實例化模型、損失函數和優化器
+trainType = 2
+if trainType == 1:
 
-        print("label OpenPrice:", labels[0, 0].item(), "label ClosePrice:", labels[0, 1].item())
-        print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+    testModel = Model.StockPredictor(input_dim= 10).to(device) 
+    testModel.load_state_dict(torch.load('./TransFormer.pth'))
 
-        loss = criterion(outputs, labels)
-        test_losses.append(loss.item())
+    criterion = nn.MSELoss()
+    # No need to track gradients for evaluation
+    with torch.no_grad():
+        for inputs, inputMask, labels in test_loader:
+            inputs, inputMask, labels = inputs.to(device), inputMask.to(device), labels.to(device)
 
-# Calculate the average loss over all test batches
-average_test_loss = np.mean(test_losses)
-print(f"Average test loss: {average_test_loss}")
+            outputs = testModel(inputs, inputMask)
+
+            print("label OpenPrice:", labels[0, 0].item(), "label ClosePrice:", labels[0, 1].item())
+            print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+
+            loss = criterion(outputs, labels)
+            test_losses.append(loss.item())
+
+    # Calculate the average loss over all test batches
+    average_test_loss = np.mean(test_losses)
+    print(f"Average test loss: {average_test_loss}")
+
+elif trainType == 2:
+    testModel = Model.LSTM(dimension = 10).to(device) 
+    testModel.load_state_dict(torch.load('./LSTM.pth'))
+
+    criterion = nn.MSELoss()
+    # No need to track gradients for evaluation
+    with torch.no_grad():
+        for inputs, inputMask, labels in test_loader:
+            inputs, inputMask, labels = inputs.to(device), inputMask.to(device), labels.to(device)
+
+            outputs = testModel(inputs)
+
+            print("label OpenPrice:", labels[0, 0].item(), "label ClosePrice:", labels[0, 1].item())
+            print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+
+            loss = criterion(outputs, labels)
+            test_losses.append(loss.item())
+
+    # Calculate the average loss over all test batches
+    average_test_loss = np.mean(test_losses)
+    print(f"Average test loss: {average_test_loss}")
