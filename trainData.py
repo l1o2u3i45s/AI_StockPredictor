@@ -77,7 +77,7 @@ if trainType == 1: #TransFormer
         total_loss = 0
         num_batches = 0
         for inputs, inputMask, labels in train_loader:
-            inputs,inputMask, labels = inputs ,inputMask , labels 
+            inputs,inputMask, labels = inputs  ,inputMask  , labels 
  
             optimizer.zero_grad()
             outputs = model(inputs,inputMask)
