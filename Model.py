@@ -30,13 +30,13 @@ class Transformer(nn.Module):
         self.fc = nn.Linear(embed_dim, 2)
 
     def forward(self, src, target):
-        src = self.linear_src(src)
-        target = self.linear_target(target)
-        transformer_output = self.transformer(src, target)
+        srcData = self.linear_src(src)
+        targetData = self.linear_target(target)
+        transformer_output = self.transformer(srcData, targetData)
         output = transformer_output[:, -1, :]
-        output = self.fc(transformer_output)
+        output = self.fc(output)
  
-        return output[:, len(output) - 1, :]
+        return output
 
 
 # DataSet
