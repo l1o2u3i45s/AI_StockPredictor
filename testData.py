@@ -58,14 +58,14 @@ test_losses = []
 trainType = 1
 if trainType == 1:
 
-    testModel = Model.Transformer(input_dim= 10).to(device) 
+    testModel = Model.Transformer(input_dim= 10) 
     testModel.load_state_dict(torch.load('./TransFormer.pth'))
 
     criterion = nn.MSELoss()
     # No need to track gradients for evaluation
     with torch.no_grad():
         for inputs, inputMask, labels in test_loader:
-            inputs, inputMask, labels = inputs.to(device), inputMask.to(device), labels.to(device)
+            inputs, inputMask, labels = inputs , inputMask , labels 
 
             outputs = testModel(inputs, inputMask)
 

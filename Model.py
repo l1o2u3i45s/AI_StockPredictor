@@ -2,6 +2,7 @@ from typing import List, Dict
 import torch.nn as nn 
 import torch 
 from torch.utils.data import Dataset
+import torch.nn.functional as F
 
 #LSTM模型
 class LSTM(nn.Module):
@@ -9,12 +10,14 @@ class LSTM(nn.Module):
         super(LSTM,self).__init__()
         self.lstm=nn.LSTM(input_size=dimension,hidden_size=128,num_layers=3,batch_first=True)
         self.linear1=nn.Linear(in_features=128,out_features=16)
-        self.linear2=nn.Linear(16,2)
+        self.linear2=nn.Linear(16,1)
+        self.softmax = nn.Softmax(dim=1)
     def forward(self,x):
         out,_=self.lstm(x)
         x=out[:,-1,:]        
         x=self.linear1(x)
         x=self.linear2(x)
+        x=self.softmax(x)
         return x
         
     
@@ -37,6 +40,7 @@ class Transformer(nn.Module):
         output = transformer_output[:, -1, :]
         output = self.fc(output)
         output = self.fc2(output)
+        
         return output
 
 

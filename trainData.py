@@ -23,7 +23,7 @@ for record in json_data:
                record['ClosePrice'],record['MA5'],
                record['MA10'],record['MA20'],
                record['MA60'],record['MACDSignal']  ]
-    labelData = [record['OpenPrice'],record['ClosePrice']] 
+    labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0] 
 
     tensorData = torch.tensor(jsonData, dtype=torch.float32) 
     label = torch.tensor(labelData, dtype=torch.float32) 
@@ -61,7 +61,7 @@ test_loader = DataLoader(testDataSet, batch_size=16)
 
 
 # # 實例化模型、損失函數和優化器
-trainType = 1
+trainType = 2
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
@@ -81,7 +81,7 @@ if trainType == 1: #TransFormer
  
             optimizer.zero_grad()
             outputs = model(inputs,inputMask)
-            
+             
             loss = criterion(outputs, labels)
             #print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
             loss.backward() 
@@ -114,6 +114,7 @@ elif trainType == 2: #LSTM
  
             optimizer.zero_grad()
             outputs = model(inputs)
+ 
             loss = criterion(outputs, labels)
              
             #print("Inputs OpenPrice:", labels[0, 0].item(), "Inputs ClosePrice:", labels[0, 1].item())
