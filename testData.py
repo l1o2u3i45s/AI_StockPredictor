@@ -23,7 +23,7 @@ for record in json_data:
                record['ClosePrice'],record['MA5'],
                record['MA10'],record['MA20'],
                record['MA60'],record['MACDSignal']  ]
-    labelData = [record['OpenPrice'],record['ClosePrice']] 
+    labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0] 
 
     tensorData = torch.tensor(jsonData, dtype=torch.float32)
     label = torch.tensor(labelData, dtype=torch.float32)
@@ -49,22 +49,25 @@ testDataSet = Model.ModelDataset(testData,testMaskData, testLabel)
 
 
 # # 創建數據加載器  
-test_loader = DataLoader(testDataSet, batch_size=16)
+test_loader = DataLoader(testDataSet, batch_size=1)
 
 test_losses = []
 
 
 # # 實例化模型、損失函數和優化器
-trainType = 1
+trainType = 2
 if trainType == 1:
 
     testModel = Model.Transformer(input_dim= 10) 
     testModel.load_state_dict(torch.load('./TransFormer.pth'))
 
     criterion = nn.MSELoss()
+    
     # No need to track gradients for evaluation
     with torch.no_grad():
         for inputs, inputMask, labels in test_loader:
+            
+            
             inputs, inputMask, labels = inputs , inputMask , labels 
 
             outputs = testModel(inputs, inputMask)
@@ -84,19 +87,33 @@ elif trainType == 2:
     testModel.load_state_dict(torch.load('./LSTM.pth'))
 
     criterion = nn.MSELoss()
+    count = 0
     # No need to track gradients for evaluation
+    totalScore = 0
+    correctCnt = 0
     with torch.no_grad():
         for inputs, inputMask, labels in test_loader:
+            print(count)
+            count +=1
             inputs, inputMask, labels = inputs.to(device), inputMask.to(device), labels.to(device)
 
             outputs = testModel(inputs)
 
-            print("label OpenPrice:", labels[0, 0].item(), "label ClosePrice:", labels[0, 1].item())
-            print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+            predict = 0
+            if(outputs[0] >= 0.5):
+                predict = 1
+
+            if(predict == labels[0]):
+                correctCnt +=1
+
+            totalScore +=1
+
+            #print("label OpenPrice:", labels[0, 0].item(), "label ClosePrice:", labels[0, 1].item())
+            #print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
 
             loss = criterion(outputs, labels)
             test_losses.append(loss.item())
 
     # Calculate the average loss over all test batches
     average_test_loss = np.mean(test_losses)
-    print(f"Average test loss: {average_test_loss}")
+    print(f"Average test loss: {correctCnt/totalScore * 100}")
