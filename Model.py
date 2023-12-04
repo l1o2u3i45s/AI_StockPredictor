@@ -22,7 +22,14 @@ class LSTM(nn.Module):
         x=out[:,-1,:]        
         x=self.linear_src(x) 
         x=self.softmax(x)
-        return x
+        x_detached = x.detach()
+        # Apply thresholding
+        x_thresholded = torch.where(x_detached[:, 0] > 0.5, torch.tensor(1.0), torch.tensor(0.0))
+        # Re-attach to the computation graph, if further computation is required
+        x = x_thresholded.requires_grad_(x.requires_grad)
+
+        return x.unsqueeze(1)
+ 
         
     
 # 定義模型

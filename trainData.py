@@ -17,11 +17,15 @@ with open('Data/' + stock_id + '.json', 'r', encoding='utf-8') as file:
 
 tensors = []
 labels = []
+
+input_DModel = 9
 for record in json_data:
     jsonData = [record['OpenPrice'],
                record['MaxPrice'],record['MinPrice'],
-               record['ClosePrice']  ]
-    labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0,0 if record['OpenPrice'] < record['ClosePrice'] else 1] 
+               record['ClosePrice'],record['MA5'],
+               record['MA10'],record['MA20'],
+               record['MA60'],record['MACDSignal']  ]
+    labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0] 
 
     tensorData = torch.tensor(jsonData, dtype=torch.float32) 
     label = torch.tensor(labelData, dtype=torch.float32) 
@@ -37,7 +41,7 @@ testTensors = tensors[trainDatasize+1 : len(tensors)]
 testLabelTensor = labels[trainDatasize+1 : len(labels)] 
 # 轉換為PyTorch張量
 window_size = 30
-maskTensor = torch.tensor([-1., -1., -1., -1.,])
+maskTensor = torch.tensor([-1., -1., -1., -1.,-1., -1., -1., -1.,-1])
 
 trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
 trainMaskData = [torch.stack(trainTensors[i:i+window_size]+ [maskTensor]) for i in range(len(trainTensors) - window_size)]
@@ -96,7 +100,7 @@ if trainType == 1: #TransFormer
 
 elif trainType == 2: #LSTM
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=4)
-    model = Model.LSTM(dimension = 4).to(device)
+    model = Model.LSTM(dimension = input_DModel).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001)
 
