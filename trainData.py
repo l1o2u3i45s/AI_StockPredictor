@@ -41,7 +41,7 @@ trainLabelTensor = labels[0 : trainDatasize]
 testTensors = tensors[trainDatasize+1 : len(tensors)] 
 testLabelTensor = labels[trainDatasize+1 : len(labels)] 
 # 轉換為PyTorch張量
-window_size = 30
+window_size = 100
 maskTensor = torch.tensor([-1., -1., -1., -1.,-1., -1., -1., -1.,-1])
 
 trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
@@ -103,7 +103,7 @@ elif trainType == 2: #LSTM
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=4)
     model = Model.LSTM(dimension = input_DModel).to(device)
     criterion = nn.MSELoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     # # 訓練模型
     num_epochs = 100
