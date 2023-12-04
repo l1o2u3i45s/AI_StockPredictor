@@ -4,6 +4,7 @@ import torch
 from torch.utils.data import Dataset
 import torch.nn.functional as F
 
+
 #LSTM模型
 class LSTM(nn.Module):
     def __init__(self,dimension):

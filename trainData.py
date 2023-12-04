@@ -6,32 +6,13 @@ import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 import matplotlib.pyplot as plt
 import Model
-
-stock_id = "006208"
+import DataService
+ 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
   
-# Reading JSON data (replace with the path to your JSON file)
-with open('Data/' + stock_id + '.json', 'r', encoding='utf-8') as file:
-    json_data = json.load(file) 
-
-tensors = []
-labels = []
-
-input_DModel = 9
-for record in json_data:
-    jsonData = [record['OpenPrice'],
-               record['MaxPrice'],record['MinPrice'],
-               record['ClosePrice'],record['MA5'],
-               record['MA10'],record['MA20'],
-               record['MA60'],record['MACDSignal']  ]
-    labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0,
-                 0 if record['OpenPrice'] < record['ClosePrice'] else 1] 
-
-    tensorData = torch.tensor(jsonData, dtype=torch.float32) 
-    label = torch.tensor(labelData, dtype=torch.float32) 
-    tensors.append(tensorData)
-    labels.append(label)
+tensors, labels = DataService.GetData()
+input_DModel = DataService.GetDModel()
 
 trainDatasize = int(len(tensors) * 0.8)
  
