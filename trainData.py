@@ -25,7 +25,8 @@ for record in json_data:
                record['ClosePrice'],record['MA5'],
                record['MA10'],record['MA20'],
                record['MA60'],record['MACDSignal']  ]
-    labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0] 
+    labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0,
+                 0 if record['OpenPrice'] < record['ClosePrice'] else 1] 
 
     tensorData = torch.tensor(jsonData, dtype=torch.float32) 
     label = torch.tensor(labelData, dtype=torch.float32) 
@@ -67,7 +68,7 @@ trainType = 2
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
-    model = Model.Transformer(input_dim= 4).to(device) 
+    model = Model.Transformer(input_dim= input_DModel).to(device) 
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 

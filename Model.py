@@ -22,13 +22,8 @@ class LSTM(nn.Module):
         x=out[:,-1,:]        
         x=self.linear_src(x) 
         x=self.softmax(x)
-        x_detached = x.detach()
-        # Apply thresholding
-        x_thresholded = torch.where(x_detached[:, 0] > 0.5, torch.tensor(1.0), torch.tensor(0.0))
-        # Re-attach to the computation graph, if further computation is required
-        x = x_thresholded.requires_grad_(x.requires_grad)
-
-        return x.unsqueeze(1)
+       
+        return x
  
         
     
@@ -47,20 +42,25 @@ class Transformer(nn.Module):
           nn.Sigmoid(),
         ) 
         self.transformer = nn.Transformer(embed_dim, batch_first=True)
-        self.fc = nn.Linear(embed_dim, 16)
-        self.fc2 = nn.Linear(16, 2)
+
+        self.fc = nn.Sequential(
+          nn.Linear(embed_dim, 16),
+          nn.Sigmoid(),
+          nn.Linear(16, 2)
+        )  
         self.softmax = nn.Softmax(dim=1)
+
+        
 
     def forward(self, src, target):
         srcData = self.linear_src(src)
         targetData = self.linear_target(target)
         transformer_output = self.transformer(srcData, targetData)
         output = transformer_output[:, -1, :]
-        output = self.fc(output)
-        output = self.fc2(output)
+        output = self.fc(output) 
         output = self.softmax(output)
-        
         return output
+         
 
 
 # DataSet
