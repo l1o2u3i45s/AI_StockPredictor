@@ -18,12 +18,10 @@ with open('Data/' + stock_id + '.json', 'r', encoding='utf-8') as file:
 tensors = []
 labels = []
 for record in json_data:
-    jsonData = [record['TradeVolumn'],record['OpenPrice'],
+    jsonData = [record['OpenPrice'],
                record['MaxPrice'],record['MinPrice'],
-               record['ClosePrice'],record['MA5'],
-               record['MA10'],record['MA20'],
-               record['MA60'],record['MACDSignal']  ]
-    labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0] 
+               record['ClosePrice']  ]
+    labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0,0 if record['OpenPrice'] < record['ClosePrice'] else 1] 
 
     tensorData = torch.tensor(jsonData, dtype=torch.float32) 
     label = torch.tensor(labelData, dtype=torch.float32) 
@@ -39,7 +37,7 @@ testTensors = tensors[trainDatasize+1 : len(tensors)]
 testLabelTensor = labels[trainDatasize+1 : len(labels)] 
 # 轉換為PyTorch張量
 window_size = 30
-maskTensor = torch.tensor([-1., -1., -1., -1., -1., -1., -1., -1., -1., -1.])
+maskTensor = torch.tensor([-1., -1., -1., -1.,])
 
 trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
 trainMaskData = [torch.stack(trainTensors[i:i+window_size]+ [maskTensor]) for i in range(len(trainTensors) - window_size)]
@@ -65,7 +63,7 @@ trainType = 2
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
-    model = Model.Transformer(input_dim= 10) 
+    model = Model.Transformer(input_dim= 4).to(device) 
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -77,7 +75,7 @@ if trainType == 1: #TransFormer
         total_loss = 0
         num_batches = 0
         for inputs, inputMask, labels in train_loader:
-            inputs,inputMask, labels = inputs   ,inputMask    , labels 
+            inputs,inputMask, labels = inputs.to(device)    ,inputMask.to(device)     , labels.to(device)  
  
             optimizer.zero_grad()
             outputs = model(inputs,inputMask)
@@ -98,12 +96,12 @@ if trainType == 1: #TransFormer
 
 elif trainType == 2: #LSTM
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=4)
-    model = Model.LSTM(dimension = 10).to(device)
+    model = Model.LSTM(dimension = 4).to(device)
     criterion = nn.MSELoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.00001)
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
 
     # # 訓練模型
-    num_epochs = 300
+    num_epochs = 100
     model.train()
     for epoch in range(num_epochs):
         total_loss = 0

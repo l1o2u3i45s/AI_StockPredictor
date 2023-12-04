@@ -10,13 +10,19 @@ class LSTM(nn.Module):
         super(LSTM,self).__init__()
         self.lstm=nn.LSTM(input_size=dimension,hidden_size=128,num_layers=3,batch_first=True)
         self.linear1=nn.Linear(in_features=128,out_features=16)
-        self.linear2=nn.Linear(16,1)
+        self.linear2=nn.Linear(16,2)
+        self.sigm = nn.Sigmoid()
+
+        self.linear_src = nn.Sequential(
+          nn.Linear(in_features=128,out_features=16),
+          nn.Sigmoid(),
+          nn.Linear(16,2),
+        ) 
         self.softmax = nn.Softmax(dim=1)
     def forward(self,x):
         out,_=self.lstm(x)
         x=out[:,-1,:]        
-        x=self.linear1(x)
-        x=self.linear2(x)
+        x=self.linear_src(x) 
         x=self.softmax(x)
         return x
         
@@ -27,11 +33,17 @@ class Transformer(nn.Module):
         super(Transformer, self).__init__()
         
         # 确保线性层的 in_features 与输入特征维度匹配
-        self.linear_src = nn.Linear(input_dim, embed_dim)  # input_dim 应该是 10
-        self.linear_target = nn.Linear(input_dim, embed_dim)
+        self.linear_src = nn.Sequential(
+          nn.Linear(input_dim, embed_dim),
+          nn.Sigmoid(),
+        ) 
+        self.linear_target = nn.Sequential(
+          nn.Linear(input_dim, embed_dim),
+          nn.Sigmoid(),
+        ) 
         self.transformer = nn.Transformer(embed_dim, batch_first=True)
         self.fc = nn.Linear(embed_dim, 16)
-        self.fc2 = nn.Linear(16, 1)
+        self.fc2 = nn.Linear(16, 2)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, src, target):
