@@ -7,22 +7,21 @@ import torch.nn.functional as F
 
 #LSTM模型
 class LSTM(nn.Module):
-    def __init__(self,dimension):
-        super(LSTM,self).__init__()
-        self.lstm=nn.LSTM(input_size=dimension,hidden_size=128,num_layers=3,batch_first=True)
-        self.sigm = nn.Sigmoid()
-
+    def __init__(self, dimension):
+        super(LSTM, self).__init__()
+        self.lstm = nn.LSTM(input_size=dimension, hidden_size=64, num_layers=2, batch_first=True, dropout=0.2)
         self.linear_src = nn.Sequential(
-          nn.Linear(in_features=128,out_features=16),
-          nn.Sigmoid(),
-          nn.Linear(16,2),
-        ) 
-        self.softmax = nn.Softmax(dim=1)
-    def forward(self,x):
-        out,_=self.lstm(x)
-        x=out[:,-1,:]        
-        x=self.linear_src(x) 
-        x=self.softmax(x)
+            nn.Linear(in_features=64, out_features=32),
+            nn.ReLU(),  # 使用 ReLU 代替 Sigmoid
+            nn.Dropout(0.5),  # 添加 Dropout 層
+            nn.Linear(32, 1)
+        )
+
+    def forward(self, x):
+        out, _ = self.lstm(x)
+        x = out[:, -1, :]        
+        x = self.linear_src(x) 
+        x = torch.sigmoid(x)  # 對於二分類問題使用 Sigmoid
        
         return x
  
