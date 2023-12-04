@@ -45,13 +45,14 @@ test_loader = DataLoader(testDataSet, batch_size=16)
 
 
 # # 實例化模型、損失函數和優化器
-trainType = 2
+trainType = 1
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
     model = Model.Transformer(input_dim= input_DModel).to(device) 
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
+    
 
     # # 訓練模型
     num_epochs = 100
@@ -81,7 +82,7 @@ if trainType == 1: #TransFormer
     torch.save(model.state_dict(), './TransFormer.pth')
 
 elif trainType == 2: #LSTM
-    train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=4)
+    train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
     model = Model.LSTM(dimension = input_DModel).to(device)
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0001)

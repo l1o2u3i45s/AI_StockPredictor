@@ -25,44 +25,40 @@ maskTensor = DataService.GetMaskData()
 testData = [torch.stack(testTensors[i:i+window_size]) for i in range(len(testTensors) - window_size)]
 testMaskData = [torch.stack(testTensors[i:i+window_size] + [maskTensor]) for i in range(len(testTensors) - window_size)]
 testLabel = testLabelTensor[window_size : len(testLabelTensor)]
- 
-print(len(testData))
+  
 testDataSet = Model.ModelDataset(testData,testMaskData, testLabel)
 
 
 # # 創建數據加載器  
 test_loader = DataLoader(testDataSet, batch_size=1)
-
-test_losses = []
-
-
+ 
+ 
 # # 實例化模型、損失函數和優化器
 trainType = 2
 if trainType == 1:
 
     testModel = Model.Transformer(input_dim= input_DModel) 
     testModel.load_state_dict(torch.load('./TransFormer.pth'))
-
-    criterion = nn.MSELoss()
-    
-    # No need to track gradients for evaluation
+ 
+    totalScore = 0
+    correctCnt = 0
+ 
     with torch.no_grad():
         for inputs, inputMask, labels in test_loader:
-            
-            
             inputs, inputMask, labels = inputs , inputMask , labels 
 
             outputs = testModel(inputs, inputMask)
 
-            print("label OpenPrice:", labels[0, 0].item(), "label ClosePrice:", labels[0, 1].item())
-            print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+            predict = 0
+            if(outputs[0,0] >= 0.5):
+                predict = 1
 
-            loss = criterion(outputs, labels)
-            test_losses.append(loss.item())
+            if(predict == labels[0,0]):
+                correctCnt +=1
 
-    # Calculate the average loss over all test batches
-    average_test_loss = np.mean(test_losses)
-    print(f"Average test loss: {average_test_loss}")
+            totalScore +=1
+
+    print(f"Correct Rate: {correctCnt/totalScore * 100}")
 
 elif trainType == 2:
     testModel = Model.LSTM(dimension = input_DModel).to(device) 
@@ -86,11 +82,5 @@ elif trainType == 2:
                 correctCnt +=1
 
             totalScore +=1
-                
-
-            #print("label OpenPrice:", labels[0, 0].item(), "label ClosePrice:", labels[0, 1].item())
-            #print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
-
- 
  
     print(f"Correct Rate: {correctCnt/totalScore * 100}")
