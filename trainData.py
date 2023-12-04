@@ -38,7 +38,7 @@ trainLabelTensor = labels[0 : trainDatasize]
 testTensors = tensors[trainDatasize+1 : len(tensors)] 
 testLabelTensor = labels[trainDatasize+1 : len(labels)] 
 # 轉換為PyTorch張量
-window_size = 100
+window_size = 30
 maskTensor = torch.tensor([-1., -1., -1., -1., -1., -1., -1., -1., -1., -1.])
 
 trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
@@ -61,7 +61,7 @@ test_loader = DataLoader(testDataSet, batch_size=16)
 
 
 # # 實例化模型、損失函數和優化器
-trainType = 1
+trainType = 2
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
@@ -97,10 +97,10 @@ if trainType == 1: #TransFormer
     torch.save(model.state_dict(), './TransFormer.pth')
 
 elif trainType == 2: #LSTM
-    train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
+    train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=4)
     model = Model.LSTM(dimension = 10).to(device)
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.SGD(model.parameters(), lr=0.00001)
 
     # # 訓練模型
     num_epochs = 300
