@@ -3,8 +3,13 @@ import json
 import torch
 stock_id = "006208"
 
+def GetWindowSize():
+    return 100
 def GetDModel():
     return 9
+
+def GetMaskData():
+    return torch.tensor([-1., -1., -1., -1.,-1., -1., -1., -1.,-1])
 
 def GetData():
 # Reading JSON data (replace with the path to your JSON file)

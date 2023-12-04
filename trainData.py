@@ -22,8 +22,8 @@ trainLabelTensor = labels[0 : trainDatasize]
 testTensors = tensors[trainDatasize+1 : len(tensors)] 
 testLabelTensor = labels[trainDatasize+1 : len(labels)] 
 # 轉換為PyTorch張量
-window_size = 100
-maskTensor = torch.tensor([-1., -1., -1., -1.,-1., -1., -1., -1.,-1])
+window_size = DataService.GetWindowSize()
+maskTensor = DataService.GetMaskData()
 
 trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
 trainMaskData = [torch.stack(trainTensors[i:i+window_size]+ [maskTensor]) for i in range(len(trainTensors) - window_size)]
