@@ -61,7 +61,7 @@ test_loader = DataLoader(testDataSet, batch_size=16)
 
 
 # # 實例化模型、損失函數和優化器
-trainType = 2
+trainType = 1
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
@@ -77,7 +77,7 @@ if trainType == 1: #TransFormer
         total_loss = 0
         num_batches = 0
         for inputs, inputMask, labels in train_loader:
-            inputs,inputMask, labels = inputs  ,inputMask  , labels 
+            inputs,inputMask, labels = inputs   ,inputMask    , labels 
  
             optimizer.zero_grad()
             outputs = model(inputs,inputMask)

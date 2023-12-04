@@ -31,7 +31,8 @@ class Transformer(nn.Module):
         self.linear_target = nn.Linear(input_dim, embed_dim)
         self.transformer = nn.Transformer(embed_dim, batch_first=True)
         self.fc = nn.Linear(embed_dim, 16)
-        self.fc2 = nn.Linear(16, 2)
+        self.fc2 = nn.Linear(16, 1)
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, src, target):
         srcData = self.linear_src(src)
@@ -40,6 +41,7 @@ class Transformer(nn.Module):
         output = transformer_output[:, -1, :]
         output = self.fc(output)
         output = self.fc2(output)
+        output = self.softmax(output)
         
         return output
 
