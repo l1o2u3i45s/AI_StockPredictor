@@ -1,7 +1,6 @@
 
 import json
 import torch
-import matplotlib.pyplot as plt
 stock_id = "006208"
 
 def GetWindowSize():
@@ -33,18 +32,6 @@ def GetData():
         labels.append(label)
 
     return tensors, labels
-
-def PlotClosePrices():
-
-    with open('Data/' + stock_id + '.json', 'r', encoding='utf-8') as file:
-        json_data = json.load(file)
-
-    close_prices = []
-    for record in json_data:
-        close_prices.append(record['ClosePrice'])
  
-    plt.plot(close_prices)
-    plt.title(f'Close Prices for {stock_id}')
-    plt.xlabel('Time')
-    plt.ylabel('Close Price')
-    plt.show()
+
+    
