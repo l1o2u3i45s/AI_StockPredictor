@@ -5,6 +5,8 @@ from torch.utils.data import DataLoader
 import Model
 import DataService
  
+DataService.PlotClosePrices()
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
   
