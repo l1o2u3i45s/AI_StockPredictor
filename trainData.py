@@ -69,7 +69,7 @@ if trainType == 1: #TransFormer
 elif trainType == 2: #LSTM
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
     model = Model.LSTM(dimension = input_DModel).to(device)
-    criterion = nn.MSELoss()
+    criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     # # 訓練模型

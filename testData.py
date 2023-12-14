@@ -1,10 +1,5 @@
-import json
-import numpy as np
-import torch
-import torch.nn as nn
-import torch.optim as optim 
-from torch.utils.data import TensorDataset, DataLoader
-import matplotlib.pyplot as plt
+import torch  
+from torch.utils.data import DataLoader 
 import Model
 import DataService
 
