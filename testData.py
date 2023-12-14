@@ -68,6 +68,7 @@ elif trainType == 2:
             outputs = testModel(inputs)
  
 
+            print(outputs[0])
             predict = 0
 
             if(outputs[0] >= 0.5):
