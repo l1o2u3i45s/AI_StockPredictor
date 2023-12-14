@@ -28,20 +28,8 @@ maskTensor = DataService.GetMaskData()
 trainData = [torch.stack(trainTensors[i:i+window_size]) for i in range(len(trainTensors) - window_size)]
 trainMaskData = [torch.stack(trainTensors[i:i+window_size]+ [maskTensor]) for i in range(len(trainTensors) - window_size)]
 trainLabel = trainLabelTensor[window_size : len(trainLabelTensor)]
- 
-testData = [torch.stack(testTensors[i:i+window_size]) for i in range(len(testTensors) - window_size)]
-testMaskData = [torch.stack(testTensors[i:i+window_size] + [maskTensor]) for i in range(len(testTensors) - window_size)]
-testLabel = testLabelTensor[window_size : len(testLabelTensor)]
- 
 
-trainDataSet = Model.ModelDataset(trainData,trainMaskData, trainLabel)
-testDataSet = Model.ModelDataset(testData,testMaskData, testLabel)
-
-
-# # 創建數據加載器 
-
-test_loader = DataLoader(testDataSet, batch_size=16)
-
+trainDataSet = Model.ModelDataset(trainData,trainMaskData, trainLabel) 
 
 
 # # 實例化模型、損失函數和優化器
