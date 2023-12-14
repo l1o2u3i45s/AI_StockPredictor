@@ -45,9 +45,8 @@ class Transformer(nn.Module):
         self.fc = nn.Sequential(
           nn.Linear(embed_dim, 16),
           nn.Sigmoid(),
-          nn.Linear(16, 2)
-        )  
-        self.softmax = nn.Softmax(dim=1)
+          nn.Linear(16, 1)
+        )   
 
         
 
@@ -57,7 +56,7 @@ class Transformer(nn.Module):
         transformer_output = self.transformer(srcData, targetData)
         output = transformer_output[:, -1, :]
         output = self.fc(output) 
-        output = self.softmax(output)
+        output = torch.sigmoid(output)
         return output
          
 

@@ -30,7 +30,7 @@ trainDataSet = Model.ModelDataset(trainData,trainMaskData, trainLabel)
 
 
 # # 實例化模型、損失函數和優化器
-trainType = 2
+trainType = 1
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
@@ -40,7 +40,7 @@ if trainType == 1: #TransFormer
 
 
     # # 訓練模型
-    num_epochs = 100
+    num_epochs = 50
     model.train()
     for epoch in range(num_epochs):
         print(epoch)

@@ -29,7 +29,7 @@ test_loader = DataLoader(testDataSet,shuffle=True, batch_size=1)
  
  
 # # 實例化模型、損失函數和優化器
-trainType = 2
+trainType = 1
 if trainType == 1:
 
     testModel = Model.Transformer(input_dim= input_DModel) 
@@ -44,11 +44,12 @@ if trainType == 1:
 
             outputs = testModel(inputs, inputMask)
 
+            print(outputs[0])
             predict = 0
-            if(outputs[0,0] >= 0.5):
+            if(outputs[0] >= 0.5):
                 predict = 1
 
-            if(predict == labels[0,0]):
+            if(predict == labels[0]):
                 correctCnt +=1
 
             totalScore +=1
