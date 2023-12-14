@@ -1,10 +1,7 @@
-import json
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim 
-from torch.utils.data import TensorDataset, DataLoader
-import matplotlib.pyplot as plt
+from torch.utils.data import DataLoader 
 import Model
 import DataService
  
@@ -38,8 +35,8 @@ trainType = 2
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
     model = Model.Transformer(input_dim= input_DModel).to(device) 
-    criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    criterion = nn.BCEWithLogitsLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
 
     # # 訓練模型
@@ -76,7 +73,7 @@ elif trainType == 2: #LSTM
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     # # 訓練模型
-    num_epochs = 100
+    num_epochs = 50
     model.train()
     for epoch in range(num_epochs):
         total_loss = 0
@@ -89,9 +86,7 @@ elif trainType == 2: #LSTM
             outputs = model(inputs)
  
             loss = criterion(outputs, labels)
-             
-            #print("Inputs OpenPrice:", labels[0, 0].item(), "Inputs ClosePrice:", labels[0, 1].item())
-            #print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
+              
             loss.backward() 
             optimizer.step()
 
