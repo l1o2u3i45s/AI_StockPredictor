@@ -24,7 +24,8 @@ def GetData():
                record['ClosePrice'],record['MA5'],
                record['MA10'],record['MA20'],
                record['MA60'],record['MACDSignal']  ]
-        labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0] 
+        labelData = [1 if record['OpenPrice'] < record['ClosePrice'] else 0,
+                     0 if record['OpenPrice'] < record['ClosePrice'] else 1] 
 
         tensorData = torch.tensor(jsonData, dtype=torch.float32)
         label = torch.tensor(labelData, dtype=torch.float32)

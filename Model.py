@@ -13,14 +13,14 @@ class LSTM(nn.Module):
         self.linear_src = nn.Sequential(
             nn.Linear(in_features=128, out_features=16),
             nn.ReLU(),  # 使用 ReLU 代替 Sigmoid 
-            nn.Linear(16, 1)
+            nn.Linear(16, 2)
         )
 
     def forward(self, x):
         out, _ = self.lstm(x)
         x = out[:, -1, :]        
         x = self.linear_src(x) 
-        x = torch.sigmoid(x)  # 對於二分類問題使用 Sigmoid
+        x = torch.sigmoid(x)  # 對於二分類問題使用 Sigmoid 
        
         return x
  
