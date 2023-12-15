@@ -9,7 +9,7 @@ import torch.nn.functional as F
 class LSTM(nn.Module):
     def __init__(self, dimension):
         super(LSTM, self).__init__()
-        self.lstm = nn.LSTM(input_size=dimension, hidden_size=512, num_layers=3, batch_first=True, dropout=0.2)
+        self.lstm = nn.LSTM(input_size=dimension, hidden_size=128, num_layers=3, batch_first=True, dropout=0.2)
         self.linear_src = nn.Sequential(
             nn.Linear(in_features=512, out_features=128),
             nn.ReLU(),   
@@ -18,10 +18,12 @@ class LSTM(nn.Module):
             nn.Linear(16, 2)
         )
 
+        self.fc = nn.Linear(128, 2)
+
     def forward(self, x):
         out, _ = self.lstm(x)
         x = out[:, -1, :]        
-        x = self.linear_src(x) 
+        x = self.fc(x) 
         x = torch.sigmoid(x)  # 對於二分類問題使用 Sigmoid 
        
         return x
@@ -50,6 +52,8 @@ class Transformer(nn.Module):
           nn.Linear(16, 2)
         )   
 
+        self.fc2 = nn.Linear(embed_dim, 2)
+
         
 
     def forward(self, src, target):
@@ -57,7 +61,7 @@ class Transformer(nn.Module):
         targetData = self.linear_target(target)
         transformer_output = self.transformer(srcData, targetData)
         output = transformer_output[:, -1, :]
-        output = self.fc(output) 
+        output = self.fc2(output) 
         output = torch.sigmoid(output)
         return output
          
