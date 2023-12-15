@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 import Model
 import DataService 
 import matplotlib.pyplot as plt
+import torch.nn as nn
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
@@ -53,8 +54,9 @@ if trainType == 1:
 elif trainType == 2:
     testModel = Model.LSTM_Price(dimension = input_DModel).to(device) 
     testModel.load_state_dict(torch.load('./LSTM_Price.pth'))
-   
-
+    criterion = nn.MSELoss()
+    total_loss = 0
+    num_batches = 0
     with torch.no_grad():
         for inputs, inputMask, labels in test_loader: 
             inputs, inputMask, labels = inputs.to(device), inputMask.to(device), labels.to(device)
@@ -63,6 +65,15 @@ elif trainType == 2:
  
             outputs_list.extend(outputs.cpu().numpy())
             labels_list.extend(labels.cpu().numpy())
+
+            loss = criterion(outputs, labels)
+         
+
+            total_loss += loss.item()
+            num_batches += 1
+
+        average_loss = total_loss / num_batches
+        print(f"Average Loss: {average_loss:.4f}")
  
  # 現在使用 Matplotlib 繪製折線圖
 plt.figure(figsize=(10, 6))

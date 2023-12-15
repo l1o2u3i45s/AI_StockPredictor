@@ -4,7 +4,7 @@ import torch
 stock_id = "006208"
 
 def GetWindowSize():
-    return 100
+    return 10
 def GetDModel():
     return 9
 
