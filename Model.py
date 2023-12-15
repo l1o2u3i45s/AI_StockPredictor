@@ -79,7 +79,7 @@ class LSTM_Price(nn.Module):
             nn.Linear(16, 2)
         )
 
-        self.fc = nn.Linear(256, 1)
+        self.fc = nn.Linear(256, 2)
 
     def forward(self, x):
         out, _ = self.lstm(x)

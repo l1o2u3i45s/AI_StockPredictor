@@ -47,7 +47,7 @@ def GetPriceData():
                record['ClosePrice'],record['MA5'],
                record['MA10'],record['MA20'],
                record['MA60'],record['MACDSignal']  ]
-        labelData = [record['ClosePrice']] 
+        labelData = [record['OpenPrice'], record['ClosePrice']] 
 
         tensorData = torch.tensor(jsonData, dtype=torch.float32)
         label = torch.tensor(labelData, dtype=torch.float32)
