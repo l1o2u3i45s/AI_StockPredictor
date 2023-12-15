@@ -74,7 +74,7 @@ elif trainType == 2: #LSTM
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
     # # 訓練模型
-    num_epochs = 200
+    num_epochs = 100
     model.train()
     for epoch in range(num_epochs):
         total_loss = 0
@@ -85,6 +85,10 @@ elif trainType == 2: #LSTM
  
             optimizer.zero_grad()
             outputs = model(inputs)
+
+            # for i in range(6):
+            #     print("Predict:" + str(outputs[i]))
+            #     print("Label:" + str(labels[i]))
  
             loss = criterion(outputs, labels)
               
