@@ -9,10 +9,12 @@ import torch.nn.functional as F
 class LSTM(nn.Module):
     def __init__(self, dimension):
         super(LSTM, self).__init__()
-        self.lstm = nn.LSTM(input_size=dimension, hidden_size=128, num_layers=3, batch_first=True, dropout=0.2)
+        self.lstm = nn.LSTM(input_size=dimension, hidden_size=512, num_layers=3, batch_first=True, dropout=0.2)
         self.linear_src = nn.Sequential(
-            nn.Linear(in_features=128, out_features=16),
-            nn.ReLU(),  # 使用 ReLU 代替 Sigmoid 
+            nn.Linear(in_features=512, out_features=128),
+            nn.ReLU(),   
+            nn.Linear(128, 16),
+            nn.ReLU(),   
             nn.Linear(16, 2)
         )
 
