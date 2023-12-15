@@ -46,8 +46,8 @@ class Transformer(nn.Module):
 
         self.fc = nn.Sequential(
           nn.Linear(embed_dim, 16),
-          nn.Sigmoid(),
-          nn.Linear(16, 1)
+          nn.ReLU(),
+          nn.Linear(16, 2)
         )   
 
         

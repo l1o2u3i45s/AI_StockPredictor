@@ -31,17 +31,17 @@ trainDataSet = Model.ModelDataset(trainData,trainMaskData, trainLabel)
 
 
 # # 實例化模型、損失函數和優化器
-trainType = 2
+trainType = 1
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
     model = Model.Transformer(input_dim= input_DModel).to(device) 
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
 
     # # 訓練模型
-    num_epochs = 50
+    num_epochs = 100
     model.train()
     for epoch in range(num_epochs):
         print(epoch)
@@ -54,7 +54,6 @@ if trainType == 1: #TransFormer
             outputs = model(inputs,inputMask)
              
             loss = criterion(outputs, labels)
-            #print("Predict OpenPrice:", outputs[0, 0].item(), "Predict ClosePrice:", outputs[0, 1].item())
             loss.backward() 
             optimizer.step()
             total_loss += loss.item()
