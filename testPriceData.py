@@ -28,43 +28,33 @@ testDataSet = Model.ModelDataset(testData,testMaskData, testLabel)
 
 
 # # 創建數據加載器  
-test_loader = DataLoader(testDataSet,shuffle=True, batch_size=1)
- 
+test_loader = DataLoader(testDataSet, batch_size=1)
+outputs_list = []  # 用於存儲模型的輸出
+labels_list = []   # 用於存儲標籤 
  
 # # 實例化模型、損失函數和優化器
-trainType = 2
+trainType = 1
 if trainType == 1:
 
-    testModel = Model.Transformer(input_dim= input_DModel) 
+    testModel = Model.Transformer_Price(input_dim= input_DModel) 
     testModel.load_state_dict(torch.load('./TransFormer_Price.pth'))
- 
-    totalScore = 0
-    correctCnt = 0
- 
+   
     with torch.no_grad():
         for inputs, inputMask, labels in test_loader:
             inputs, inputMask, labels = inputs , inputMask , labels 
 
             outputs = testModel(inputs, inputMask)
 
-            print(outputs[0])
-            predict = 0
-            if(outputs[0,0] >= 0.5):
-                predict = 1
+            outputs_list.extend(outputs.cpu().numpy())
+            labels_list.extend(labels.cpu().numpy())
 
-            if(predict == labels[0,0]):
-                correctCnt +=1
-
-            totalScore +=1
-
-    print(f"Correct Rate: {correctCnt/totalScore * 100}")
+ 
 
 elif trainType == 2:
     testModel = Model.LSTM_Price(dimension = input_DModel).to(device) 
     testModel.load_state_dict(torch.load('./LSTM_Price.pth'))
    
-    outputs_list = []  # 用於存儲模型的輸出
-    labels_list = []   # 用於存儲標籤 
+
     with torch.no_grad():
         for inputs, inputMask, labels in test_loader: 
             inputs, inputMask, labels = inputs.to(device), inputMask.to(device), labels.to(device)
