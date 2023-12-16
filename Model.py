@@ -112,7 +112,7 @@ class Transformer_Price(nn.Module):
           nn.Linear(16, 2)
         )   
 
-        self.fc2 = nn.Linear(embed_dim, 1)
+        self.fc2 = nn.Linear(embed_dim, 2)
 
         
 

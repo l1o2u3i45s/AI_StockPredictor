@@ -29,7 +29,7 @@ trainDataSet = Model.ModelDataset(trainData,trainMaskData, trainLabel)
 
 
 # # 實例化模型、損失函數和優化器
-trainType = 2
+trainType = 1
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
@@ -69,10 +69,10 @@ elif trainType == 2: #LSTM
     model = Model.LSTM_Price(dimension = input_DModel).to(device)
     #criterion = nn.BCEWithLogitsLoss()
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.0001)
+    optimizer = optim.Adam(model.parameters(), lr=0.00005)
 
     # # 訓練模型
-    num_epochs = 300
+    num_epochs = 500
     model.train()
     for epoch in range(num_epochs):
         total_loss = 0
