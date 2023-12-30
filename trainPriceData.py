@@ -4,7 +4,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader 
 import Model
 import DataService
-
+import matplotlib.pyplot as plt
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
@@ -27,9 +27,9 @@ trainLabel = trainLabelTensor[window_size : len(trainLabelTensor)]
 
 trainDataSet = Model.ModelDataset(trainData,trainMaskData, trainLabel) 
 
-
+epoch_losses = []
 # # 實例化模型、損失函數和優化器
-trainType = 1
+trainType = 2
 
 if trainType == 1: #TransFormer
     train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
@@ -56,8 +56,10 @@ if trainType == 1: #TransFormer
             optimizer.step()
             total_loss += loss.item()
             num_batches += 1
+            
 
         average_loss = total_loss / num_batches
+        epoch_losses.append(average_loss)
         print(f"Epoch {epoch} - Average Loss: {average_loss:.4f}")
 
     # # 預測並獲取預測值
@@ -65,14 +67,14 @@ if trainType == 1: #TransFormer
     torch.save(model.state_dict(), './TransFormer_Price.pth')
 
 elif trainType == 2: #LSTM
-    train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=16)
+    train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=4)
     model = Model.LSTM_Price(dimension = input_DModel).to(device)
     #criterion = nn.BCEWithLogitsLoss()
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.00005)
+    optimizer = optim.SGD(model.parameters(), lr=0.00001)
 
     # # 訓練模型
-    num_epochs = 500
+    num_epochs = 100
     model.train()
     for epoch in range(num_epochs):
         total_loss = 0
@@ -93,8 +95,16 @@ elif trainType == 2: #LSTM
             num_batches += 1
 
         average_loss = total_loss / num_batches
+        epoch_losses.append(average_loss)
         print(f"Epoch {epoch} - Average Loss: {average_loss:.4f}")
 
     # # 預測並獲取預測值
     model.eval()
     torch.save(model.state_dict(), './LSTM_Price.pth')
+
+
+plt.plot(epoch_losses)
+plt.title('Training Loss per Epoch')
+plt.xlabel('Epoch')
+plt.ylabel('Average Loss')
+plt.show()

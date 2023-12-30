@@ -70,12 +70,9 @@ class Transformer(nn.Module):
 class LSTM_Price(nn.Module):
     def __init__(self, dimension):
         super(LSTM_Price, self).__init__()
-        self.lstm = nn.LSTM(input_size=dimension, hidden_size=256, num_layers=3, batch_first=True, dropout=0.1)
-        self.linear_src = nn.Sequential(
-            nn.Linear(in_features=512, out_features=128),
-            nn.ReLU(),   
-            nn.Linear(128, 16),
-            nn.ReLU(),   
+        self.lstm = nn.LSTM(input_size=dimension, hidden_size=128, num_layers=3, batch_first=True, dropout=0.1)
+        self.linear_src = nn.Sequential( 
+            nn.Linear(128, 16), 
             nn.Linear(16, 2)
         )
 
@@ -84,7 +81,7 @@ class LSTM_Price(nn.Module):
     def forward(self, x):
         out, _ = self.lstm(x)
         x = out[:, -1, :]        
-        x = self.fc(x)  
+        x = self.linear_src(x)  
        
         return x
  

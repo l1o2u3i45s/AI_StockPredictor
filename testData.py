@@ -29,7 +29,7 @@ test_loader = DataLoader(testDataSet,shuffle=True, batch_size=1)
  
  
 # # 實例化模型、損失函數和優化器
-trainType = 1
+trainType = 2
 if trainType == 1:
 
     testModel = Model.Transformer(input_dim= input_DModel) 
