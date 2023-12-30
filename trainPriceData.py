@@ -67,14 +67,14 @@ if trainType == 1: #TransFormer
     torch.save(model.state_dict(), './TransFormer_Price.pth')
 
 elif trainType == 2: #LSTM
-    train_loader = DataLoader(trainDataSet, shuffle=True, batch_size=4)
+    train_loader = DataLoader(trainDataSet, batch_size=16)
     model = Model.LSTM_Price(dimension = input_DModel).to(device)
     #criterion = nn.BCEWithLogitsLoss()
     criterion = nn.MSELoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.00001)
+    optimizer = optim.Adam(model.parameters(), lr=0.00005)
 
     # # 訓練模型
-    num_epochs = 100
+    num_epochs = 300
     model.train()
     for epoch in range(num_epochs):
         total_loss = 0

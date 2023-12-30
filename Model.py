@@ -70,9 +70,10 @@ class Transformer(nn.Module):
 class LSTM_Price(nn.Module):
     def __init__(self, dimension):
         super(LSTM_Price, self).__init__()
-        self.lstm = nn.LSTM(input_size=dimension, hidden_size=128, num_layers=3, batch_first=True, dropout=0.1)
+        self.lstm = nn.LSTM(input_size=dimension, hidden_size=512, num_layers=3, batch_first=True, dropout=0.1)
         self.linear_src = nn.Sequential( 
-            nn.Linear(128, 16), 
+            nn.Linear(512, 128), 
+             nn.Linear(128, 16), 
             nn.Linear(16, 2)
         )
 

@@ -13,7 +13,7 @@ print("Using device:", device)
 
 tensors,labels = DataService.GetPriceData()
 input_DModel = DataService.GetDModel()
-trainDatasize = int(len(tensors) * 0.7)
+trainDatasize = int(len(tensors) * 0.8)
 print(f"datasize:{trainDatasize}")
 
 testTensors = tensors[trainDatasize+1 : len(tensors)] 
