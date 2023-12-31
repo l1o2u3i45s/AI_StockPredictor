@@ -6,10 +6,18 @@ stock_id = "006208"
 def GetWindowSize():
     return 20
 def GetDModel():
-    return 9
+    return 4
 
 def GetMaskData():
-    return torch.tensor([-1., -1., -1., -1.,-1., -1., -1., -1.,-1])
+
+    dModel = GetDModel()
+
+    maskData = []
+
+    for i in range(dModel):
+        maskData.append(-1)
+
+    return torch.tensor(maskData)
 
 def GetData():
 # Reading JSON data (replace with the path to your JSON file)
@@ -44,9 +52,7 @@ def GetPriceData():
     for record in json_data:
         jsonData = [record['OpenPrice'],
                record['MaxPrice'],record['MinPrice'],
-               record['ClosePrice'],record['MA5'],
-               record['MA10'],record['MA20'],
-               record['MA60'],record['MACDSignal']  ]
+               record['ClosePrice']   ]
         labelData = [record['OpenPrice'], record['ClosePrice']] 
 
         tensorData = torch.tensor(jsonData, dtype=torch.float32)
